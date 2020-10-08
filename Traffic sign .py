@@ -1,10 +1,8 @@
 
-
 # %% Importing libraries
 
 import pickle
 import numpy as np
-# import pandas as pd
 import matplotlib.pyplot as plt
 
 
@@ -28,6 +26,9 @@ valid_file = 'valid.p'
 valid_obj = open(valid_file, 'rb')
 valid_data = pickle.load(valid_obj)
 valid_data
+
+# %%  Keys
+train_data.keys()
 # %%  Extracting training feature and training labels
 
 train_features = train_data['features']
@@ -43,22 +44,18 @@ test_labels = test_data['labels']
 valid_features = valid_data['features']
 valid_labels = valid_data['labels']
 
-# %%  
+# %%  Single Image Visualization
 
 plt.axis('off')
 plt.imshow(valid_features[55])
 valid_labels[55]
 
 
-# %%
+# %%  
 
 for i in range(len(test_features)):
     test_img = test_features[i]
 
-# %%
-
-# for j in range(len(test_labels)):
-#     labels = test_labels[j]
 
 # %%
 plt.axis('off')
@@ -69,7 +66,7 @@ len(test_img)
 
 # %%
 
-class_names = str(list(train_features)) # You can also take train_lables instead of it
+class_names = str(train_labels) 
 class_names = list(class_names)
 
 #%%  Verify the data
@@ -82,41 +79,9 @@ for i in range(50):
     plt.yticks([])
     plt.grid(False)
     plt.axis('off')
-    plt.imshow(test_features[i])  # cmap=plt.get_cmap('gray')
-    # The CIFAR labels happen to be arrays, 
-    # which is why you need the extra index
-    plt.xlabel(class_names[i])
+    plt.imshow(test_features[i]) 
+    plt.xlabel(test_labels[i])
 plt.show()
-
-# %%   Import TensorFlow
-
-import keras
-# from keras.datasets import mnist
-from keras.models import Model
-# from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D
-from keras.layers import Dense, Input ,Dropout, Flatten
-from keras.utils import to_categorical
-from keras.preprocessing import image
-# from keras import backend as K
-
-# from sklearn.model_selection import train_test_split
-# from tqdm import tqdm
-
-
-# %%  Reshape dataset to have a single channel
-
-# img_rows, img_cols = 32,32
-
-# if K.image_data_format() == 'channels_first':
-#     x_train =  train_features.reshape(train_features.shape[0],3, img_rows, img_cols)
-#     x_test =  test_features.reshape(test_features.shape[0],3, img_rows, img_cols)
-#     input_x = (3, img_rows, img_cols)
-
-# else:
-#     x_train =  train_features.reshape(train_features.shape[0], img_rows, img_cols, 3)
-#     x_test =  test_features.reshape(test_features.shape[0], img_rows, img_cols, 3)
-#     input_x = (img_rows, img_cols, 3)    
 
 # %%  Converting into float 
 
@@ -130,14 +95,20 @@ x_train /= 255
 x_test /= 255
 x_valid /= 255 
 
-# %% Convert class metrix to binary metrix 
-
-# y_train = keras.utils.to_categorical(train_labels)
-# y_test = keras.utils.to_categorical(test_labels)
+# %%
 
 y_train = train_labels
 y_test = test_labels
 y_valid = valid_labels
+
+# %%   Import TensorFlow
+
+import keras
+from keras.models import Model
+from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import Dense, Input ,Dropout, Flatten
+from keras.utils import to_categorical
+from keras.preprocessing import image
 
 # %%   Create the convolutional base
 
@@ -152,30 +123,6 @@ layer_5 = Flatten() (layer_4)
 layer_6 = Dense(150, activation='relu') (layer_5)
 layer_7 = Dense(80, activation='relu') (layer_6)
 layer_8 = Dense(43, activation='softmax') (layer_7)
-
-
-# %%
-
-# model = Sequential()
-# model.add(Conv2D(filters=16, kernel_size=(5, 5), activation="relu", input_shape=(400,400,3)))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Dropout(0.25))
-# model.add(Conv2D(filters=32, kernel_size=(5, 5), activation='relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Dropout(0.25))
-# model.add(Conv2D(filters=64, kernel_size=(5, 5), activation="relu"))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Dropout(0.25))
-# model.add(Conv2D(filters=64, kernel_size=(5, 5), activation='relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Dropout(0.25))
-# model.add(Flatten())
-# model.add(Dense(128, activation='relu'))
-# model.add(Dropout(0.5))
-# model.add(Dense(64, activation='relu'))
-# model.add(Dropout(0.5))
-# model.add(Dense(25, activation='sigmoid'))
-
 
 # %%  Displaying the architecture of model
 
@@ -225,26 +172,26 @@ label_names = {
     8 : 'Speed limit 120km/h' , 
     9 : 'No passing',
     10 : 'No passing for vehicles over 3.5 metric tons',
-    11 : 'Rightofway at the next intersection',
+    11 : 'Right-of-way at the next intersection',
     12 : 'Priority road',
     13 : 'Yield' ,
     14 : 'Stop' ,
     15 : 'No vehicles',
-    16 : 'Vehicles over 3.5 metric tons prohiited' ,
+    16 : 'Vehicles over 3.5 metric tons prohibited' ,
     17 : 'No entry',
     18 : 'General caution' ,
     19 : 'Dangerous curve to the left',
     20 : 'Dangerous curve to the right' ,
-    21 : 'Doule curve',
-    22 : 'umpy road' ,
+    21 : 'Double curve',
+    22 : 'dumpy road' ,
     23 : 'Slippery road',
     24 : 'Road narrows on the right' ,
     25 : 'Road work',
     26 : 'Traffic signals' ,
     27 : 'Pedestrians' ,
     28 : 'Children crossing',
-    29 : 'icycles crossing' ,
-    30 : 'eware of ice/snow',
+    29 : 'cycles crossing' ,
+    30 : 'aware of ice/snow',
     31 : 'Wild animals crossing',
     32 : 'End of all speed and passing limits' ,
     33 : 'Turn right ahead',
@@ -254,12 +201,10 @@ label_names = {
     37 : 'Go straight or left' ,
     38 : 'Keep right' ,
     39 : 'Keep left',
-    40 : 'Roundaout mandatory',
+    40 : 'Roundabout mandatory',
     41 : 'End of no passing',
-    42 :'End of no passing y vehicles over 3.5 metric tons'
+    42 : 'End of no passing y vehicles over 3.5 metric tons'
 }
-
-
 
 labels =label_names.values()
 val = list(labels)
@@ -267,7 +212,7 @@ val = list(labels)
 
 # %%  single value prediction
 
-number = 130
+number = 200
 
 prediction = model.predict(x_valid)
 warning = np.argmax(np.round(prediction[number]))
@@ -276,5 +221,4 @@ print(val[warning])
 plt.axis('off')
 plt.imshow(x_valid[number], cmap = plt.cm.binary)
 plt.show()
-
-# %%
+  
